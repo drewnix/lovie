@@ -1,7 +1,5 @@
 # Lövie - LÖVE Framework Demo Collection
 
-![Lövie Logo](assets/lovie-logo.png)
-
 Lövie (pronounced like "love-ee") is an interactive showcase various demos I am using as reference as I create games.
 
 ## Getting Started
