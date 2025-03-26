@@ -1,0 +1,147 @@
+-- scenes/menu.lua
+-- Menu scene for selecting between different demos
+
+local SceneManager = require('lib.sceneManager')
+local Button = require('lib.components.button')
+local Utils = require('lib.utils')
+
+print("Menu scene module loading")
+
+local Menu = {
+    title = "Lövie Demo Collection",
+    description = "A showcase of LÖVE framework features",
+    initialized = false  -- Flag to check if enter has been called
+}
+
+local title = "Lövie Demo Collection"
+local subtitle = "A showcase of LÖVE framework features"
+local buttons = {}
+local buttonHeight = 50
+local buttonWidth = 300
+local buttonSpacing = 20
+
+function Menu.enter()
+    print("MENU ENTER FUNCTION CALLED")
+    Menu.initialized = true
+
+    -- Set up buttons for each scene
+    buttons = {}
+    
+    local sceneNames = SceneManager.getAllSceneNames()
+    table.sort(sceneNames)
+    
+    local buttonY = 200
+    for _, sceneName in ipairs(sceneNames) do
+        -- Skip the menu itself
+        if sceneName ~= "menu" then
+            local displayName = sceneName:gsub("_", " ")
+            displayName = displayName:gsub("^%l", string.upper) -- Capitalize first letter
+            
+            local button = Button.new(
+                (love.graphics.getWidth() - buttonWidth) / 2,
+                buttonY,
+                buttonWidth,
+                buttonHeight,
+                displayName,
+                {
+                    onClick = function()
+                        SceneManager.switchTo(sceneName)
+                    end
+                }
+            )
+            
+            table.insert(buttons, button)
+            buttonY = buttonY + buttonHeight + buttonSpacing
+        end
+    end
+end
+
+function Menu.update(dt)
+    for _, button in ipairs(buttons) do
+        button:update(dt)
+    end
+end
+
+function Menu.draw()
+    -- Make sure it draws something very obvious
+    -- love.graphics.setColor(0.2, 0.2, 0.3)
+    love.graphics.setColor(1, 0, 0)  -- Bright red
+
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+    
+    -- Draw title text in large, visible font
+    love.graphics.setColor(1, 0, 0)  -- Red color for visibility
+    love.graphics.setFont(love.graphics.newFont(32))
+    love.graphics.printf("MENU SCENE - DEBUG MODE", 0, 50, love.graphics.getWidth(), "center")
+    
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.setFont(love.graphics.newFont(24))
+    love.graphics.printf(Menu.title, 0, 100, love.graphics.getWidth(), "center")
+
+    love.graphics.setFont(love.graphics.newFont(18))
+    love.graphics.printf(Menu.description, 0, 150, love.graphics.getWidth(), "center")
+    
+    love.graphics.setColor(1, 1, 0)  -- Yellow for visibility
+    love.graphics.printf("Init status: " .. tostring(Menu.initialized), 0, 200, love.graphics.getWidth(), "center")
+    
+    -- Draw background
+    love.graphics.setColor(0.2, 0.2, 0.3)
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+    
+    -- Draw title
+    love.graphics.setColor(1, 1, 1)
+    local titleFont = love.graphics.newFont(32)
+    love.graphics.setFont(titleFont)
+    love.graphics.printf(title, 0, 50, love.graphics.getWidth(), "center")
+    
+    -- Draw subtitle
+    local subtitleFont = love.graphics.newFont(18)
+    love.graphics.setFont(subtitleFont)
+    love.graphics.printf(subtitle, 0, 100, love.graphics.getWidth(), "center")
+    
+    -- Draw buttons
+    for _, button in ipairs(buttons) do
+        button:draw()
+    end
+    
+    -- Draw footer
+    love.graphics.setFont(love.graphics.newFont(14))
+    love.graphics.printf(
+        "Press 'M' at any time to return to this menu",
+        0,
+        love.graphics.getHeight() - 50,
+        love.graphics.getWidth(),
+        "center"
+    )
+    
+    -- Reset font
+    love.graphics.setFont(love.graphics.newFont(12))
+end
+
+function Menu.mousepressed(x, y, button)
+    for _, btn in ipairs(buttons) do
+        if btn:mousepressed(x, y, button) then
+            return
+        end
+    end
+end
+
+function Menu.mousereleased(x, y, button)
+    for _, btn in ipairs(buttons) do
+        if btn:mousereleased(x, y, button) then
+            return
+        end
+    end
+end
+
+-- Window resize handling
+function Menu.resize(w, h)
+    -- Recenter all buttons
+    local buttonY = 200
+    for _, button in ipairs(buttons) do
+        button:setPosition((w - buttonWidth) / 2, buttonY)
+        buttonY = buttonY + buttonHeight + buttonSpacing
+    end
+end
+
+return Menu
