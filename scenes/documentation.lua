@@ -29,7 +29,7 @@ local selectedSection = 1
 
 function Documentation.enter()
     print("Entering documentation scene")
-    
+
     -- Reset scroll position
     scroll = 0
     selectedSection = 1
@@ -43,15 +43,15 @@ function Documentation.draw()
     -- Draw background
     love.graphics.setColor(0.15, 0.15, 0.2)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-    
+
     -- Draw title
     love.graphics.setColor(1, 1, 1)
     love.graphics.setFont(love.graphics.newFont(28))
     love.graphics.printf(Documentation.title, 0, 30, love.graphics.getWidth(), "center")
-    
+
     love.graphics.setFont(love.graphics.newFont(16))
     love.graphics.printf(Documentation.description, 0, 70, love.graphics.getWidth(), "center")
-    
+
     -- Draw content sections
     local y = 120 - scroll
     for i, section in ipairs(sections) do
@@ -61,21 +61,21 @@ function Documentation.draw()
         else
             love.graphics.setColor(0.2, 0.2, 0.3)
         end
-        
+
         local sectionHeight = 80 + string.len(section.content) / 3
         love.graphics.rectangle("fill", 50, y, love.graphics.getWidth() - 100, sectionHeight)
-        
+
         -- Draw section content
         love.graphics.setColor(1, 1, 1)
         love.graphics.setFont(love.graphics.newFont(20))
         love.graphics.print(section.title, 70, y + 20)
-        
+
         love.graphics.setFont(love.graphics.newFont(14))
         love.graphics.printf(section.content, 70, y + 50, love.graphics.getWidth() - 140, "left")
-        
+
         y = y + sectionHeight + 20
     end
-    
+
     -- Draw instructions
     love.graphics.setColor(1, 1, 1, 0.7)
     love.graphics.setFont(love.graphics.newFont(14))

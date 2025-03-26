@@ -26,32 +26,32 @@ end
 -- Switch to a specific scene by name
 function SceneManager.switchTo(sceneName)
     debugPrint("Switch request to scene:", sceneName)
-    
+
     if not SceneManager.scenes[sceneName] then
         debugPrint("ERROR: Scene '" .. sceneName .. "' does not exist!")
         debugPrint("Available scenes:", table.concat(getTableKeys(SceneManager.scenes), ", "))
         return
     end
-    
+
     -- Log history for back navigation
     if SceneManager.current then
         table.insert(SceneManager.history, SceneManager.current)
     end
-    
+
     debugPrint("Calling exit on current scene:", SceneManager.current)
     -- Call exit on current scene if it exists
     if SceneManager.current and 
        SceneManager.scenes[SceneManager.current] and 
        SceneManager.scenes[SceneManager.current].exit then
-        
+
         SceneManager.scenes[SceneManager.current].exit()
     end
-    
+
     -- Update current scene
     local oldScene = SceneManager.current
     SceneManager.current = sceneName
     debugPrint("Scene changed from", oldScene, "to", sceneName)
-    
+
     -- Call enter on new scene if it exists
     debugPrint("Calling enter on new scene:", sceneName)
     if SceneManager.scenes[sceneName].enter then

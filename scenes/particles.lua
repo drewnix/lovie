@@ -12,7 +12,7 @@ local systems = {}
 function Particles.enter()
     print("Entering particles scene")
     systems = {}
-    
+
     -- Create particle image (a bright white circle)
     local particleCanvas = love.graphics.newCanvas(32, 32)
     love.graphics.setCanvas(particleCanvas)
@@ -20,7 +20,7 @@ function Particles.enter()
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.circle("fill", 16, 16, 16)
     love.graphics.setCanvas()
-    
+
     -- 1. Fountain - center of screen
     local fountain = love.graphics.newParticleSystem(particleCanvas, 1000)
     fountain:setParticleLifetime(1, 3)
@@ -40,14 +40,14 @@ function Particles.enter()
         0, 0, 0.5, 0    -- Fade out
     )
     fountain:setPosition(400, 500)
-    
+
     table.insert(systems, {
         name = "Fountain",
         system = fountain,
         x = 400, 
         y = 500
     })
-    
+
     -- 2. Fire - left side
     local fire = love.graphics.newParticleSystem(particleCanvas, 1000)
     fire:setParticleLifetime(0.5, 1.5)
@@ -63,14 +63,14 @@ function Particles.enter()
     )
     fire:setPosition(200, 300)
     fire:setEmissionArea("ellipse", 30, 10, 0, true)
-    
+
     table.insert(systems, {
         name = "Fire",
         system = fire,
         x = 200,
         y = 300
     })
-    
+
     -- 3. Explosion - right side (emit on space key)
     local explosion = love.graphics.newParticleSystem(particleCanvas, 500)
     explosion:setParticleLifetime(0.5, 1.5)
@@ -88,21 +88,21 @@ function Particles.enter()
     explosion:setPosition(600, 300)
     -- Initial burst
     explosion:emit(200)
-    
+
     table.insert(systems, {
         name = "Explosion (Space)",
         system = explosion,
         x = 600,
         y = 300
     })
-    
+
     -- Emit initial particles for all systems
     for _, system in ipairs(systems) do
         if system.name ~= "Explosion (Space)" then
             system.system:emit(100)
         end
     end
-    
+
     print("Created " .. #systems .. " particle systems")
 end
 
@@ -116,24 +116,24 @@ function Particles.draw()
     -- Draw background (dark blue)
     love.graphics.setColor(0.05, 0.05, 0.15)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-    
+
     -- Draw title
     love.graphics.setColor(1, 1, 1)
     love.graphics.setFont(love.graphics.newFont(24))
     love.graphics.print(Particles.title, 50, 50)
-    
+
     -- Draw particles
     love.graphics.setColor(1, 1, 1)
     for _, system in ipairs(systems) do
         -- Draw the particle system
         love.graphics.draw(system.system)
-        
+
         -- Draw system name
         love.graphics.setFont(love.graphics.newFont(14))
         love.graphics.setColor(1, 1, 1, 0.7)
         love.graphics.print(system.name, system.x - 50, system.y + 50, 0, 1, 1, 0, 0, 0.5, 0.5)
     end
-    
+
     -- Draw instructions
     love.graphics.setColor(1, 1, 1, 0.7)
     love.graphics.setFont(love.graphics.newFont(16))
@@ -143,7 +143,7 @@ end
 
 function Particles.keypressed(key)
     print("Particles scene received key: " .. key)
-    
+
     if key == "space" then
         -- Find explosion system and emit a burst
         for _, system in ipairs(systems) do

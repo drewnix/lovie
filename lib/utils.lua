@@ -34,11 +34,11 @@ end
 -- Draw a rounded rectangle
 function Utils.drawRoundedRect(x, y, width, height, radius)
     radius = radius or 10
-    
-    -- Draw the rectangle shape
+
+    -- Save current graphics state
     love.graphics.push()
     love.graphics.translate(x, y)
-    
+
     -- Top-left corner
     love.graphics.arc("fill", radius, radius, radius, math.pi, math.pi * 1.5)
     -- Top-right corner
@@ -47,11 +47,11 @@ function Utils.drawRoundedRect(x, y, width, height, radius)
     love.graphics.arc("fill", width - radius, height - radius, radius, 0, math.pi * 0.5)
     -- Bottom-left corner
     love.graphics.arc("fill", radius, height - radius, radius, math.pi * 0.5, math.pi)
-    
+
     -- Rectangles to fill the space between arcs
     love.graphics.rectangle("fill", radius, 0, width - radius * 2, height)
     love.graphics.rectangle("fill", 0, radius, width, height - radius * 2)
-    
+
     love.graphics.pop()
 end
 
@@ -63,34 +63,34 @@ function Utils.createTimer(duration, callback, loops)
         loops = loops or 1,
         time = 0,
         active = true,
-        
+
         update = function(self, dt)
             if not self.active then return end
-            
+
             self.time = self.time + dt
             if self.time >= self.duration then
                 if self.callback then self.callback() end
-                
+
                 if self.loops > 0 then
                     self.loops = self.loops - 1
                     if self.loops == 0 then
                         self.active = false
                     end
                 end
-                
+
                 self.time = self.time - self.duration
             end
         end,
-        
+
         reset = function(self)
             self.time = 0
             self.active = true
         end,
-        
+
         stop = function(self)
             self.active = false
         end,
-        
+
         start = function(self)
             self.active = true
         end
@@ -101,11 +101,11 @@ end
 function Utils.drawTextWithShadow(text, x, y, shadowOffset, align)
     shadowOffset = shadowOffset or 2
     align = align or "left"
-    
+
     -- Draw shadow
     love.graphics.setColor(0, 0, 0, 0.5)
     love.graphics.printf(text, x + shadowOffset, y + shadowOffset, love.graphics.getWidth(), align)
-    
+
     -- Draw text
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.printf(text, x, y, love.graphics.getWidth(), align)
@@ -114,7 +114,7 @@ end
 -- Create a simple tween function
 function Utils.tween(obj, target, duration, easing)
     easing = easing or "linear"
-    
+
     local tween = {
         obj = obj,
         target = target,
@@ -123,16 +123,16 @@ function Utils.tween(obj, target, duration, easing)
         time = 0,
         complete = false,
         easing = easing,
-        
+
         update = function(self, dt)
             if self.complete then return end
-            
+
             self.time = self.time + dt
             local progress = math.min(self.time / self.duration, 1)
-            
+
             -- Apply easing
             local easedProgress = progress -- Linear by default
-            
+
             if self.easing == "inQuad" then
                 easedProgress = progress * progress
             elseif self.easing == "outQuad" then
@@ -140,19 +140,19 @@ function Utils.tween(obj, target, duration, easing)
             elseif self.easing == "inOutQuad" then
                 easedProgress = progress < 0.5 and 2 * progress * progress or 1 - math.pow(-2 * progress + 2, 2) / 2
             end
-            
+
             -- Update all properties
             for k, v in pairs(self.target) do
                 if self.obj[k] ~= nil then
                     self.obj[k] = self.start[k] + (self.target[k] - self.start[k]) * easedProgress
                 end
             end
-            
+
             if progress >= 1 then
                 self.complete = true
             end
         end,
-        
+
         reset = function(self)
             self.time = 0
             self.complete = false
@@ -164,14 +164,14 @@ function Utils.tween(obj, target, duration, easing)
             end
         end
     }
-    
+
     -- Store starting values
     for k, v in pairs(target) do
         if obj[k] ~= nil then
             tween.start[k] = obj[k]
         end
     end
-    
+
     return tween
 end
 

@@ -23,16 +23,21 @@ local scenes = {
     physics = require('scenes.physics'),
     particles = require('scenes.particles'),
     audio = require('scenes.audio'),
-    documentation = require('scenes.documentation')
+    documentation = require('scenes.documentation'),
+
+    -- New scenes added
+    camera_systems = require('scenes.camera_systems'),
+    resolution_management = require('scenes.resolution_management'),
+    shaders = require('scenes.shaders')
 }
 
 function love.load()
     -- Initialize the scene manager with all our scenes
     SceneManager.init(scenes)
-    
+
     -- Start with the menu scene
     SceneManager.switchTo('menu')
-    
+
     -- Set up key bindings
     love.keyboard.keysPressed = {}
 end
@@ -40,7 +45,7 @@ end
 function love.update(dt)
     -- Pass update to the current scene
     SceneManager.update(dt)
-    
+
     -- Reset keys pressed
     love.keyboard.keysPressed = {}
 end
@@ -48,7 +53,7 @@ end
 function love.draw()
     -- Pass draw to the current scene
     SceneManager.draw()
-    
+
     -- Display a hint about the menu key
     love.graphics.setColor(1, 1, 1, 0.7)
     love.graphics.printf("Press 'M' for menu", 10, love.graphics.getHeight() - 30, love.graphics.getWidth() - 20, "right")
@@ -59,23 +64,23 @@ end
 function love.keypressed(key)
     -- Debug output
     print("Key pressed: " .. key)
-    
+
     -- Store keys pressed for the current frame (if you're using this)
     if love.keyboard.keysPressed then
         love.keyboard.keysPressed[key] = true
     end
-    
+
     -- Special case for 'M' key to return to menu
     if key == 'm' or key == 'M' then
         print("Menu key detected, current scene: " .. tostring(SceneManager.current))
-        
+
         -- Get list of available scenes
         local availableScenes = {}
         for name, _ in pairs(SceneManager.scenes) do
             table.insert(availableScenes, name)
         end
         print("Available scenes: " .. table.concat(availableScenes, ", "))
-        
+
         -- Try to switch to menu
         if SceneManager.scenes['menu'] then
             SceneManager.switchTo('menu')
@@ -89,7 +94,7 @@ function love.keypressed(key)
             SceneManager.keypressed(key)
         end
     end
-    
+
     -- Escape key for quitting (useful during testing)
     if key == 'escape' then
         love.event.quit()

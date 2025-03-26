@@ -1,13 +1,11 @@
 # Lövie Demo Collection Roadmap
 
-Here's a comprehensive roadmap of demos to add to your Lövie project, organized by category. This should provide a solid foundation of techniques and features that will be useful for future game development.
-
 ## Core Graphics
 - [x] Basic Drawing (shapes, colors, lines)
 - [x] Animations (tweening, sprite animations, transforms)
-- [ ] Camera Systems (following, lerping, shake effects)
-- [ ] Resolution Management (scaling, virtual resolution, pixel-perfect rendering)
-- [ ] Shaders (post-processing, distortion effects, lighting)
+- [~] Camera Systems (following, lerping, shake effects) - TODO: BROKEN!
+- [x] Resolution Management (scaling, virtual resolution, pixel-perfect rendering)
+- [x] Shaders (post-processing, distortion effects, lighting)
 - [ ] Custom Rendering (render targets, canvas manipulation)
 
 ## Physics & Collisions
@@ -84,4 +82,81 @@ Here's a comprehensive roadmap of demos to add to your Lövie project, organized
 - [ ] Level Editor (basic tile placement)
 - [ ] Asset Browser (preview loaded resources)
 
-This roadmap provides a structured path for developing demos that cover a wide range of game development techniques. Each demo should include well-commented code, visual examples, and interactive elements where appropriate. As you complete each demo, you'll build a valuable reference library for future game projects.
+## Framework Improvements
+- [ ] Improved Scene Transitions (fade, slide, etc.)
+- [ ] Asset Preloading System
+- [ ] Theme Customization
+- [ ] Mobile-friendly Controls
+- [ ] Improved Error Handling
+- [ ] Comprehensive Inline Documentation
+
+## Game Templates/Starters
+- [ ] Platformer Starter (basic movement, jumping, collecting items)
+- [ ] Top-down RPG/Adventure Template (character movement, simple interactions)
+- [ ] Puzzle Game Framework (grid-based, matching or sliding puzzles)
+- [ ] Isometric Game Example (tile placement, movement, depth sorting)
+- [ ] Shoot 'em Up Framework (scrolling, enemies, projectiles)
+
+## Media and Content Creation
+- [ ] Procedural Content Generation (textures, terrain, dungeons)
+- [ ] Sprite Animation Tools (character animations, cutscenes)
+- [ ] Texture Atlases and Spritesheets (optimization, animation)
+- [ ] Tilemap Creation and Management (level design)
+- [ ] Cutscene System (dialogue, camera movements, scripted events)
+
+## Math and Algorithms
+- [ ] Interpolation Techniques (beyond linear - cubic, elastic, etc.)
+- [ ] Noise Generation (Perlin, Simplex, etc. for terrain, textures)
+- [ ] Curve Editors (bezier curves, splines for paths)
+- [ ] Random Generation with Seeds (reproducible randomness)
+- [ ] Math Utilities (vectors, matrices, collision detection)
+
+## Physics & Collisions
+- [ ] Physics Playground (interactive demos of different physics properties)
+- [ ] Custom Physics (for specific game types or when Box2D is overkill)
+- [ ] Collision Response Systems (bouncing, sliding, destruction)
+
+## User Interface
+- [ ] UI Component Library (buttons, sliders, toggles, dropdowns)
+- [ ] UI Layout Systems (grid, flex, anchored)
+- [ ] UI Animation and Transitions (easing, slide-ins)
+- [ ] Responsive UI (adapting to different resolutions)
+
+## Advanced Graphics
+- [ ] Normal Mapping for 2D (fake lighting depth)
+- [ ] Particle Physics Integration (particles affected by force fields)
+- [ ] Advanced Animation Techniques (IK, skeletal, mesh deformation)
+- [ ] Weather Effects (rain, snow, fog with physics interaction)
+
+## Cross-platform Considerations 
+- [ ] Touch Controls Optimization
+- [ ] Performance Profiling on Mobile Devices
+- [ ] Orientation Changes and Responsive Layout
+- [ ] Platform-specific Features Detection
+- [ ] Offline Mode and Persistence
+
+## Development Tools
+- [ ] Hot Reloading Demo (change code without restarting)
+- [ ] Asset Pipeline Management
+- [ ] In-game Level Editor
+- [ ] Debug Visualization Tools
+- [ ] Unit Testing Framework for Game Logic
+
+## Project Structure
+- [ ] Large Project Organization
+- [ ] State Management Patterns
+- [ ] Component Architecture Examples
+- [ ] Event Systems and Messaging
+
+## Accessibility Features
+- [ ] Screen Reader Support
+- [ ] Alternative Input Methods
+- [ ] Configurable Difficulty
+- [ ] Color Blindness Simulation and Adaptation
+- [ ] Caption/Subtitle System
+
+## Extension Points
+- [ ] Plugin System Architecture
+- [ ] Mod Support Examples
+- [ ] Custom Content Loading
+- [ ] API Design for Extensions

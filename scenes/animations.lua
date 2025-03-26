@@ -15,7 +15,7 @@ local selectedAnimation = 1
 
 function Animations.enter()
     elapsedTime = 0
-    
+
     -- Reset all animations
     animations = {
         {
@@ -53,7 +53,7 @@ function Animations.enter()
             end,
             draw = function(self)
                 love.graphics.setColor(self.object.color)
-                
+
                 -- Draw from center with scale
                 love.graphics.push()
                 love.graphics.translate(
@@ -109,7 +109,7 @@ function Animations.enter()
             end,
             draw = function(self)
                 love.graphics.setColor(self.object.color)
-                
+
                 -- Draw with rotation
                 love.graphics.push()
                 love.graphics.translate(
@@ -145,7 +145,7 @@ function Animations.enter()
             update = function(self, dt)
                 -- Easing animation back and forth
                 self.object.time = self.object.time + dt * self.object.direction
-                
+
                 if self.object.time >= self.object.duration then
                     self.object.time = self.object.duration
                     self.object.direction = -1
@@ -153,11 +153,11 @@ function Animations.enter()
                     self.object.time = 0
                     self.object.direction = 1
                 end
-                
+
                 -- Cubic easing
                 local t = self.object.time / self.object.duration
                 local easedT = t < 0.5 and 4 * t * t * t or 1 - math.pow(-2 * t + 2, 3) / 2
-                
+
                 self.object.x = Utils.lerp(
                     self.object.startX,
                     self.object.targetX,
@@ -175,7 +175,7 @@ end
 
 function Animations.update(dt)
     elapsedTime = elapsedTime + dt
-    
+
     -- Update all animations
     for _, anim in ipairs(animations) do
         anim:update(dt)
@@ -186,41 +186,41 @@ function Animations.draw()
     -- Draw background
     love.graphics.setColor(0.2, 0.2, 0.3)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-    
+
     -- Draw title and description
     love.graphics.setColor(1, 1, 1)
     love.graphics.setFont(love.graphics.newFont(24))
     love.graphics.printf(Animations.title, 0, 20, love.graphics.getWidth(), "center")
-    
+
     love.graphics.setFont(love.graphics.newFont(16))
     love.graphics.printf(Animations.description, 0, 60, love.graphics.getWidth(), "center")
-    
+
     -- Draw animations
     for i, anim in ipairs(animations) do
         -- Draw name
         love.graphics.setColor(1, 1, 1)
         love.graphics.setFont(love.graphics.newFont(14))
         love.graphics.print(anim.name, 400, anim.object.y)
-        
+
         -- Draw the animation
         anim:draw()
-        
+
         -- Draw description if this is the selected animation
         if i == selectedAnimation then
             love.graphics.setColor(0.1, 0.1, 0.15)
             love.graphics.rectangle("fill", 500, 150, 270, 200)
-            
+
             love.graphics.setColor(1, 1, 1)
             love.graphics.setFont(love.graphics.newFont(12))
             love.graphics.printf(anim.description, 510, 160, 250, "left")
         end
     end
-    
+
     -- Draw instructions
     love.graphics.setColor(1, 1, 1, 0.7)
     love.graphics.setFont(love.graphics.newFont(12))
     love.graphics.printf("Press UP/DOWN to select different animations", 0, love.graphics.getHeight() - 30, love.graphics.getWidth(), "center")
-    
+
     -- Reset font and color
     love.graphics.setFont(love.graphics.newFont(12))
     love.graphics.setColor(1, 1, 1)

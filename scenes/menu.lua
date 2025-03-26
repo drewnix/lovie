@@ -250,9 +250,11 @@ function generateColorForScene(sceneName)
         physics = { 0.4, 0.7, 0.4 },     -- Green
         particles = { 0.7, 0.5, 0.8 },   -- Purple
         audio = { 0.8, 0.7, 0.3 },       -- Gold
-        documentation = { 0.5, 0.5, 0.7 } -- Slate blue
+        documentation = { 0.5, 0.5, 0.7 }, -- Slate blue
+        camera_systems = { 0.5, 0.5, 0.7 }, -- Slate blue
+        resolution_management = { 0.5, 0.5, 0.7 }, -- Slate blue
+        shaders = { 0.5, 0.5, 0.7 } -- Slate blue
     }
-
     return colors[sceneName] or { 0.4, 0.5, 0.6 } -- Default blue-gray
 end
 

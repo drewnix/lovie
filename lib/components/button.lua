@@ -8,13 +8,13 @@ Button.__index = Button
 
 function Button.new(x, y, width, height, text, options)
     local self = setmetatable({}, Button)
-    
+
     self.x = x
     self.y = y
     self.width = width
     self.height = height
     self.text = text or ""
-    
+
     options = options or {}
     self.color = options.color or {0.4, 0.5, 0.6}  -- Neutral blue-gray
     self.hoverColor = options.hoverColor or {0.5, 0.6, 0.7}  -- Lighter blue-gray
@@ -23,20 +23,20 @@ function Button.new(x, y, width, height, text, options)
     self.cornerRadius = options.cornerRadius or 8
     self.onClick = options.onClick
     self.id = options.id or Utils.generateID()
-    
+
     self.isHovered = false
     self.isPressed = false
     self.isEnabled = true
-    
+
     return self
 end
 
 function Button:update(dt)
     if not self.isEnabled then return end
-    
+
     local mouseX, mouseY = love.mouse.getPosition()
     self.isHovered = Utils.pointInRect(mouseX, mouseY, self.x, self.y, self.width, self.height)
-    
+
     if self.isPressed and not love.mouse.isDown(1) then
         self.isPressed = false
         if self.isHovered and self.onClick then
@@ -47,7 +47,7 @@ end
 
 function Button:mousepressed(x, y, button)
     if not self.isEnabled then return end
-    
+
     if button == 1 and self.isHovered then
         self.isPressed = true
         return true
@@ -57,7 +57,7 @@ end
 
 function Button:mousereleased(x, y, button)
     if not self.isEnabled then return end
-    
+
     if button == 1 and self.isPressed then
         self.isPressed = false
         if self.isHovered and self.onClick then
@@ -80,11 +80,11 @@ function Button:draw()
     else
         currentColor = self.color
     end
-    
+
     -- Draw button background
     love.graphics.setColor(currentColor)
     Utils.drawRoundedRect(self.x, self.y, self.width, self.height, self.cornerRadius)
-    
+
     -- Draw button text
     love.graphics.setColor(self.textColor)
     love.graphics.printf(
@@ -94,7 +94,7 @@ function Button:draw()
         self.width,
         "center"
     )
-    
+
     -- Reset color
     love.graphics.setColor(1, 1, 1)
 end

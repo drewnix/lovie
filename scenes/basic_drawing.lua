@@ -74,50 +74,50 @@ function BasicDrawing.draw()
     -- Draw background
     love.graphics.setColor(0.2, 0.2, 0.3)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-    
+
     -- Draw title and description
     love.graphics.setColor(1, 1, 1)
     love.graphics.setFont(love.graphics.newFont(24))
     love.graphics.printf(BasicDrawing.title, 0, 20, love.graphics.getWidth(), "center")
-    
+
     love.graphics.setFont(love.graphics.newFont(16))
     love.graphics.printf(BasicDrawing.description, 0, 60, love.graphics.getWidth(), "center")
-    
+
     -- Draw shapes in a grid
     local gridX = 150
     local gridY = 120
     local cellWidth = 150
     local cellHeight = 120
     local columns = 3
-    
+
     for i, shape in ipairs(shapes) do
         local col = (i - 1) % columns
         local row = math.floor((i - 1) / columns)
-        
+
         local x = gridX + col * cellWidth
         local y = gridY + row * cellHeight
-        
+
         -- Draw cell background
         love.graphics.setColor(0.3, 0.3, 0.4)
         love.graphics.rectangle("fill", x - 10, y - 10, cellWidth - 10, cellHeight - 10)
-        
+
         -- Draw shape
         love.graphics.setColor(colors[(i - 1) % #colors + 1])
         shape.draw(x, y + 20)
-        
+
         -- Draw shape name
         love.graphics.setColor(1, 1, 1)
         love.graphics.setFont(love.graphics.newFont(14))
         love.graphics.printf(shape.name, x - 10, y - 5, cellWidth - 10, "center")
     end
-    
+
     -- Draw code example
     love.graphics.setColor(0.1, 0.1, 0.15)
     love.graphics.rectangle("fill", 500, 350, 270, 200)
-    
+
     love.graphics.setColor(1, 1, 1)
     love.graphics.setFont(love.graphics.newFont(12))
-    
+
     local codeExample = [[
 -- Drawing shapes in LÖVE
 love.graphics.setColor(1, 0, 0)                 -- Red
@@ -129,9 +129,9 @@ love.graphics.circle("fill", x, y, radius)      -- Circle
 love.graphics.setColor(0, 0, 1)                 -- Blue
 love.graphics.polygon("fill", x1, y1, x2, y2, x3, y3)
     ]]
-    
+
     love.graphics.printf(codeExample, 510, 360, 250, "left")
-    
+
     -- Reset font and color
     love.graphics.setFont(love.graphics.newFont(12))
     love.graphics.setColor(1, 1, 1)

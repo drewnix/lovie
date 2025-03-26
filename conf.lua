@@ -5,18 +5,18 @@ function love.conf(t)
     t.title = "Lövie - LÖVE Framework Demo Collection"
     t.version = "11.4"  -- The LÖVE version this game was made for
     t.console = true    -- Attach a console for debugging
-    
+
     -- Window settings
     t.window.width = 800
     t.window.height = 600
     t.window.resizable = true
     t.window.vsync = 1
-    
+
     -- Disable modules we don't need
     t.modules.joystick = false
     t.modules.touch = false
     t.modules.video = false
-    
+
     -- Enable modules we do need
     t.modules.audio = true
     t.modules.data = true
