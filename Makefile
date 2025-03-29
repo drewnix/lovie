@@ -29,7 +29,7 @@ else
 endif
 
 # Main targets
-.PHONY: all run clean package help new-scene
+.PHONY: all run clean package help new-scene remove-scene
 
 # Default target runs the help command
 all: help
@@ -66,10 +66,23 @@ endif
 # Create a new empty scene template
 new-scene:
 	@if [ -z "$(name)" ]; then \
-		echo "Usage: make new-scene name=your_scene_name"; \
+		echo "Usage: make new-scene name=your_scene_name category=Category"; \
 		exit 1; \
 	fi; \
-	./scripts/create_scene.sh "$(name)"
+	if [ -z "$(category)" ]; then \
+		cat=Debug; \
+	else \
+		cat="$(category)"; \
+	fi; \
+	./scripts/create_scene.sh "$(name)" "$$cat"
+
+# Remove a scene
+remove-scene:
+	@if [ -z "$(name)" ]; then \
+		echo "Usage: make remove-scene name=scene_name"; \
+		exit 1; \
+	fi; \
+	./scripts/remove_scene.sh "$(name)"
 
 # Check if LÖVE is installed
 check-love:
@@ -89,9 +102,10 @@ help:
 	@echo "  make package                    - Create a .love file for distribution"
 	@echo "  make clean                      - Clean temporary files"
 	@echo "  make windows                    - Create a Windows executable (Windows only)"
-	@echo "  make new-scene name=scene_name  - Create a new scene template"
-	@echo "  make check-love                 - Check if LÖVE is installed"
-	@echo "  make help                       - Display this help message"
+	@echo "  make new-scene name=scene_name category=Category  - Create a new scene template"
+	@echo "  make remove-scene name=scene_name               - Remove a scene"
+	@echo "  make check-love                                 - Check if LÖVE is installed"
+	@echo "  make help                                       - Display this help message"
 	@echo ""
 	@echo "Current detected OS: $(DETECTED_OS)"
 	@echo "LÖVE executable: $(LOVE_EXECUTABLE)"

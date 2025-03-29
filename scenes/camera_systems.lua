@@ -320,18 +320,18 @@ function CameraSystems.draw()
         -- Draw camera bounds
         if camera.bounds then
             love.graphics.setColor(0.8, 0.4, 0.4, 0.3)
-            love.graphics.rectangle("fill", 
-                camera.bounds.x, 
-                camera.bounds.y, 
-                camera.bounds.width, 
+            love.graphics.rectangle("fill",
+                camera.bounds.x,
+                camera.bounds.y,
+                camera.bounds.width,
                 camera.bounds.height
             )
 
             love.graphics.setColor(1, 0, 0)
-            love.graphics.rectangle("line", 
-                camera.bounds.x, 
-                camera.bounds.y, 
-                camera.bounds.width, 
+            love.graphics.rectangle("line",
+                camera.bounds.x,
+                camera.bounds.y,
+                camera.bounds.width,
                 camera.bounds.height
             )
         end
@@ -342,18 +342,18 @@ function CameraSystems.draw()
             local dy = camera.y + camera.deadzone.y
 
             love.graphics.setColor(0.4, 0.8, 0.4, 0.3)
-            love.graphics.rectangle("fill", 
-                dx, 
-                dy, 
-                camera.deadzone.width, 
+            love.graphics.rectangle("fill",
+                dx,
+                dy,
+                camera.deadzone.width,
                 camera.deadzone.height
             )
 
             love.graphics.setColor(0, 1, 0)
-            love.graphics.rectangle("line", 
-                dx, 
-                dy, 
-                camera.deadzone.width, 
+            love.graphics.rectangle("line",
+                dx,
+                dy,
+                camera.deadzone.width,
                 camera.deadzone.height
             )
         end
@@ -387,19 +387,19 @@ function CameraSystems.draw()
 
     -- Draw the player
     love.graphics.setColor(player.color)
-    love.graphics.rectangle("fill", 
-        player.x - player.width/2, 
-        player.y - player.height/2, 
-        player.width, 
+    love.graphics.rectangle("fill",
+        player.x - player.width/2,
+        player.y - player.height/2,
+        player.width,
         player.height
     )
 
     -- Draw a direction indicator
     love.graphics.setColor(1, 1, 1)
     love.graphics.line(
-        player.x, 
-        player.y, 
-        player.x + player.width/2, 
+        player.x,
+        player.y,
+        player.x + player.width/2,
         player.y
     )
 
@@ -457,9 +457,9 @@ function CameraSystems.draw()
         love.graphics.setFont(love.graphics.newFont(16))
         love.graphics.printf(
             "Demo: " .. currentDemo,
-            boxX + 10, 
-            boxY + 10, 
-            boxWidth - 20, 
+            boxX + 10,
+            boxY + 10,
+            boxWidth - 20,
             "center"
         )
 
@@ -467,10 +467,10 @@ function CameraSystems.draw()
         love.graphics.setColor(1, 1, 1, alpha)
         love.graphics.setFont(love.graphics.newFont(13))
         love.graphics.printf(
-            helpText, 
-            boxX + 10, 
-            boxY + 35, 
-            boxWidth - 20, 
+            helpText,
+            boxX + 10,
+            boxY + 35,
+            boxWidth - 20,
             "left"
         )
     end

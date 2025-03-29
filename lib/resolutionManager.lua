@@ -39,7 +39,7 @@ function ResolutionManager.init(gameWidth, gameHeight, scaleMode)
 
     -- Create canvas for rendering at virtual resolution
     ResolutionManager.canvas = love.graphics.newCanvas(
-        ResolutionManager.gameWidth, 
+        ResolutionManager.gameWidth,
         ResolutionManager.gameHeight
     )
 
@@ -148,11 +148,11 @@ function ResolutionManager.endDraw()
 
     -- Draw the canvas with appropriate scaling and position
     love.graphics.draw(
-        ResolutionManager.canvas, 
-        ResolutionManager.offsetX, 
-        ResolutionManager.offsetY, 
+        ResolutionManager.canvas,
+        ResolutionManager.offsetX,
+        ResolutionManager.offsetY,
         0, -- rotation
-        ResolutionManager.scaleX, 
+        ResolutionManager.scaleX,
         ResolutionManager.scaleY
     )
 end

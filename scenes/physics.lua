@@ -85,9 +85,9 @@ function Physics.createObject(x, y, objectType)
             -- Draw a line to show rotation
             local angle = self.body:getAngle()
             love.graphics.line(
-                self.body:getX(), 
-                self.body:getY(), 
-                self.body:getX() + radius * math.cos(angle), 
+                self.body:getX(),
+                self.body:getY(),
+                self.body:getX() + radius * math.cos(angle),
                 self.body:getY() + radius * math.sin(angle)
             )
         end

@@ -1,8 +1,9 @@
 -- scenes/menu.lua
 -- Enhanced menu scene with categories, scrolling, and pagination for many scenes
 
--- Use the global SceneManager to avoid circular dependencies
+-- Use the global SceneManager and SceneLoader to avoid circular dependencies
 local SceneManager = _G.SceneManager
+local SceneLoader = _G.SceneLoader
 local Button = require('lib.components.button')
 local Utils = require('lib.utils')
 
@@ -35,37 +36,10 @@ local isScrolling = false
 local scrollbarGrabbed = false
 local scrollGrabOffset = 0
 
--- Categories and scenes organization
-local categories = {
-    { name = "Basics", color = {0.4, 0.6, 0.8} },
-    { name = "Graphics", color = {0.8, 0.4, 0.6} },
-    { name = "Audio & Input", color = {0.4, 0.7, 0.4} },
-    { name = "Systems", color = {0.7, 0.5, 0.8} },
-    { name = "Debug", color = {0.5, 0.5, 0.7} }
-}
-
--- Scene to category mapping
-local categoryMap = {
-    -- Basics
-    basic_drawing = "Basics",
-    documentation = "Basics",
-
-    -- Graphics
-    animations = "Graphics",
-    particles = "Graphics",
-    shaders = "Graphics",
-
-    -- Audio & Input
-    audio = "Audio & Input",
-
-    -- Systems
-    physics = "Systems",
-    camera_systems = "Systems",
-    resolution_management = "Systems",
-
-    -- Debug
-    debug_scene = "Debug"
-}
+-- Load categories from config
+local categories = {}
+local categoryMap = {}
+local sceneColors = {}
 
 -- Visual elements
 local buttons = {}
@@ -84,6 +58,14 @@ local searchFont = nil
 
 function Menu.enter()
     print("Menu.enter() called")
+
+    -- Load config
+    local config = SceneLoader.loadConfig()
+    categories = config.categories
+    categoryMap = config.sceneCategories
+    sceneColors = config.sceneColors
+
+    -- Initialize menu and visuals
     initializeMenu()
     initializeVisuals()
     updateScrollableArea()
@@ -121,9 +103,11 @@ function initializeMenu()
             local displayName = sceneName:gsub("_", " ")
             displayName = displayName:gsub("^%l", string.upper) -- Capitalize first letter
 
-            -- Find which category this scene belongs to
-            local categoryName = categoryMap[sceneName] or "Debug"
+            -- Get category from the scene or from the category map
+            local scene = SceneManager.scenes[sceneName]
+            local categoryName = (scene and scene.category) or categoryMap[sceneName] or "Debug"
 
+            -- Create button for the scene
             local button = Button.new(
                 0, 0, -- Position will be set later
                 buttonWidth,
@@ -838,19 +822,21 @@ end
 
 -- Helper function to generate a unique color for each scene
 function generateColorForScene(sceneName)
-    local colors = {
-        basic_drawing = { 0.4, 0.6, 0.8 }, -- Blue
-        animations = { 0.8, 0.4, 0.6 },  -- Pink
-        physics = { 0.4, 0.7, 0.4 },     -- Green
-        particles = { 0.7, 0.5, 0.8 },   -- Purple
-        audio = { 0.8, 0.7, 0.3 },       -- Gold
-        documentation = { 0.5, 0.5, 0.7 }, -- Slate blue
-        camera_systems = { 0.6, 0.4, 0.2 }, -- Brown
-        resolution_management = { 0.2, 0.6, 0.6 }, -- Teal
-        shaders = { 0.7, 0.3, 0.7 }, -- Purple
-        debug_scene = { 0.5, 0.5, 0.5 } -- Gray
-    }
-    return colors[sceneName] or { 0.4, 0.5, 0.6 } -- Default blue-gray
+    -- First check if scene has a specific color
+    if sceneColors[sceneName] then
+        return sceneColors[sceneName]
+    end
+
+    -- Fall back to category color
+    local categoryName = categoryMap[sceneName] or "Debug"
+    for _, category in ipairs(categories) do
+        if category.name == categoryName then
+            return category.color
+        end
+    end
+
+    -- Default color if nothing found
+    return {0.4, 0.5, 0.6}
 end
 
 -- Helper function to draw a gradient box

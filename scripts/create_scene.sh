@@ -1,14 +1,16 @@
 #!/bin/bash
-# Script to create a new LÖVE scene
+# Script to create a new LÖVE scene with category
 
 # Check if scene name is provided
 if [ $# -eq 0 ]; then
-    echo "Usage: $0 <scene_name>"
+    echo "Usage: $0 <scene_name> [category]"
     exit 1
 fi
 
 scene_name=$1
+category=${2:-Debug}  # Default to Debug if category not provided
 scene_file="scenes/${scene_name}.lua"
+config_file="config/scenes.lua"
 
 # Check if scene already exists
 if [ -f "$scene_file" ]; then
@@ -16,7 +18,7 @@ if [ -f "$scene_file" ]; then
     exit 1
 fi
 
-# Convert to PascalCase
+# Convert scene name to PascalCase
 first_char=$(echo "$scene_name" | cut -c1 | tr '[:lower:]' '[:upper:]')
 rest=$(echo "$scene_name" | cut -c2-)
 pascal="${first_char}${rest}"
@@ -28,7 +30,8 @@ cat > "$scene_file" << EOF
 
 local ${pascal} = {
     title = "${pascal}",
-    description = "Description of what this scene demonstrates"
+    description = "Description of what this scene demonstrates",
+    category = "${category}"  -- Category for menu organization
 }
 
 function ${pascal}.enter()
@@ -81,5 +84,15 @@ end
 return ${pascal}
 EOF
 
-echo "Scene created: $scene_file"
-echo "Remember to add your new scene to main.lua!"
+# Update the config file with the new scene
+if [ -f "$config_file" ]; then
+    # Add new scene to the config file manually
+    echo "" >> "$config_file"
+    echo "-- Added by make new-scene" >> "$config_file"
+    echo "-- Add this to the sceneCategories section:" >> "$config_file"
+    echo "--     $scene_name = \"$category\"," >> "$config_file"
+fi
+
+echo "Scene created successfully: $scene_file"
+echo "Scene added to category: $category"
+echo "Please update the config/scenes.lua file to include this scene."

@@ -197,10 +197,10 @@ function Audio.enter()
     for i, source in ipairs(sources) do
         -- Play button
         local playButton = Button.new(
-            100, 
-            buttonY, 
-            120, 
-            50, 
+            100,
+            buttonY,
+            120,
+            50,
             "Play " .. source.name,
             {
                 onClick = function()
@@ -212,10 +212,10 @@ function Audio.enter()
 
         -- Stop button
         local stopButton = Button.new(
-            240, 
-            buttonY, 
-            120, 
-            50, 
+            240,
+            buttonY,
+            120,
+            50,
             "Stop " .. source.name,
             {
                 onClick = function()
@@ -230,12 +230,12 @@ function Audio.enter()
 
     -- Volume slider
     local volumeSlider = Slider.new(
-        500, 
-        200, 
-        200, 
-        20, 
-        0, 
-        1, 
+        500,
+        200,
+        200,
+        20,
+        0,
+        1,
         volumeLevel,
         function(value)
             volumeLevel = value
@@ -249,12 +249,12 @@ function Audio.enter()
 
     -- Pitch slider
     local pitchSlider = Slider.new(
-        500, 
-        280, 
-        200, 
-        20, 
-        0.5, 
-        2, 
+        500,
+        280,
+        200,
+        20,
+        0.5,
+        2,
         pitchLevel,
         function(value)
             pitchLevel = value

@@ -40,8 +40,8 @@ function SceneManager.switchTo(sceneName)
 
     debugPrint("Calling exit on current scene:", SceneManager.current)
     -- Call exit on current scene if it exists
-    if SceneManager.current and 
-       SceneManager.scenes[SceneManager.current] and 
+    if SceneManager.current and
+       SceneManager.scenes[SceneManager.current] and
        SceneManager.scenes[SceneManager.current].exit then
 
         SceneManager.scenes[SceneManager.current].exit()
@@ -77,8 +77,8 @@ end
 
 -- Pass through all LÖVE events to the current scene
 function SceneManager.update(dt)
-    if SceneManager.current and 
-       SceneManager.scenes[SceneManager.current] and 
+    if SceneManager.current and
+       SceneManager.scenes[SceneManager.current] and
        SceneManager.scenes[SceneManager.current].update then
         local success, err = pcall(function()
             SceneManager.scenes[SceneManager.current].update(dt)
@@ -90,8 +90,8 @@ function SceneManager.update(dt)
 end
 
 function SceneManager.draw()
-    if SceneManager.current and 
-       SceneManager.scenes[SceneManager.current] and 
+    if SceneManager.current and
+       SceneManager.scenes[SceneManager.current] and
        SceneManager.scenes[SceneManager.current].draw then
         local success, err = pcall(function()
             SceneManager.scenes[SceneManager.current].draw()
@@ -104,32 +104,32 @@ end
 
 function SceneManager.keypressed(key)
     debugPrint("Forwarding keypressed", key, "to scene:", SceneManager.current)
-    if SceneManager.current and 
-       SceneManager.scenes[SceneManager.current] and 
+    if SceneManager.current and
+       SceneManager.scenes[SceneManager.current] and
        SceneManager.scenes[SceneManager.current].keypressed then
         SceneManager.scenes[SceneManager.current].keypressed(key)
     end
 end
 
 function SceneManager.keyreleased(key)
-    if SceneManager.current and 
-       SceneManager.scenes[SceneManager.current] and 
+    if SceneManager.current and
+       SceneManager.scenes[SceneManager.current] and
        SceneManager.scenes[SceneManager.current].keyreleased then
         SceneManager.scenes[SceneManager.current].keyreleased(key)
     end
 end
 
 function SceneManager.mousepressed(x, y, button)
-    if SceneManager.current and 
-       SceneManager.scenes[SceneManager.current] and 
+    if SceneManager.current and
+       SceneManager.scenes[SceneManager.current] and
        SceneManager.scenes[SceneManager.current].mousepressed then
         SceneManager.scenes[SceneManager.current].mousepressed(x, y, button)
     end
 end
 
 function SceneManager.mousereleased(x, y, button)
-    if SceneManager.current and 
-       SceneManager.scenes[SceneManager.current] and 
+    if SceneManager.current and
+       SceneManager.scenes[SceneManager.current] and
        SceneManager.scenes[SceneManager.current].mousereleased then
         SceneManager.scenes[SceneManager.current].mousereleased(x, y, button)
     end

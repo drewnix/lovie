@@ -62,10 +62,10 @@ function Animations.enter()
                 )
                 love.graphics.scale(self.object.scale, self.object.scale)
                 love.graphics.rectangle(
-                    "fill", 
-                    -self.object.width / 2, 
-                    -self.object.height / 2, 
-                    self.object.width, 
+                    "fill",
+                    -self.object.width / 2,
+                    -self.object.height / 2,
+                    self.object.width,
                     self.object.height
                 )
                 love.graphics.pop()
@@ -118,10 +118,10 @@ function Animations.enter()
                 )
                 love.graphics.rotate(self.object.rotation)
                 love.graphics.rectangle(
-                    "fill", 
-                    -self.object.width / 2, 
-                    -self.object.height / 2, 
-                    self.object.width, 
+                    "fill",
+                    -self.object.width / 2,
+                    -self.object.height / 2,
+                    self.object.width,
                     self.object.height
                 )
                 love.graphics.pop()

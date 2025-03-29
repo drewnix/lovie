@@ -44,7 +44,7 @@ function Particles.enter()
     table.insert(systems, {
         name = "Fountain",
         system = fountain,
-        x = 400, 
+        x = 400,
         y = 500
     })
 
@@ -80,7 +80,7 @@ function Particles.enter()
     explosion:setSpeed(200, 500)
     explosion:setSpread(math.pi*2) -- 360 degrees
     explosion:setColors(
-        1, 1, 0, 1,    -- Yellow 
+        1, 1, 0, 1,    -- Yellow
         1, 0.5, 0, 1,  -- Orange
         1, 0, 0, 0.5,  -- Red
         0, 0, 0, 0     -- Fade out

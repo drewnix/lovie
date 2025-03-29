@@ -6,31 +6,34 @@ if arg[2] == "debug" then
 end
 
 -- Require the scene manager
--- local SceneManager = require('lib.sceneManager')
 local SceneManager = require('lib/sceneManager')
+
+-- Require the scene loader
+local SceneLoader = require('lib/sceneLoader')
 
 -- Store SceneManager in global table to avoid circular dependencies
 _G.SceneManager = SceneManager
+_G.SceneLoader = SceneLoader
 
+-- Explicitly load the menu scene first (special case)
+local scenes = {
+    menu = require('scenes.menu')
+}
+
+-- Load all other scenes dynamically
+local function loadAllScenes()
+    local dynamicScenes = SceneLoader.getAllScenes()
+    for name, scene in pairs(dynamicScenes) do
+        -- Skip the menu (already loaded)
+        if name ~= "menu" then
+            scenes[name] = scene
+        end
+    end
+    return scenes
+end
 
 -- Load all scenes
-local scenes = {
-    menu = require('scenes.menu'),
-    basic_drawing = require('scenes.basic_drawing'),
-    animations = require('scenes.animations'),
-    physics = require('scenes.physics'),
-    particles = require('scenes.particles'),
-    audio = require('scenes.audio'),
-    documentation = require('scenes.documentation'),
-
-    -- New scenes added
-    camera_systems = require('scenes.camera_systems'),
-    resolution_management = require('scenes.resolution_management'),
-    shaders = require('scenes.shaders'),
-
-    -- Debug scene
-    debug_scene = require('scenes.debug_scene')
-}
+scenes = loadAllScenes()
 
 function love.load()
     -- Initialize the scene manager with all our scenes
@@ -90,7 +93,7 @@ function love.keypressed(key)
         end
     else
         -- Pass key press to current scene
-        if SceneManager.current and SceneManager.scenes[SceneManager.current] and 
+        if SceneManager.current and SceneManager.scenes[SceneManager.current] and
            SceneManager.scenes[SceneManager.current].keypressed then
             SceneManager.keypressed(key)
         end

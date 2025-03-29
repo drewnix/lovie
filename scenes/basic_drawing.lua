@@ -36,7 +36,7 @@ function BasicDrawing.enter()
         {
             name = "Polygon",
             draw = function(x, y)
-                love.graphics.polygon("fill", 
+                love.graphics.polygon("fill",
                     x + 50, y,           -- Top
                     x + 100, y + 70,     -- Bottom right
                     x, y + 70            -- Bottom left

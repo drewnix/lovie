@@ -128,7 +128,7 @@
 - [ ] Advanced Animation Techniques (IK, skeletal, mesh deformation)
 - [ ] Weather Effects (rain, snow, fog with physics interaction)
 
-## Cross-platform Considerations 
+## Cross-platform Considerations
 - [ ] Touch Controls Optimization
 - [ ] Performance Profiling on Mobile Devices
 - [ ] Orientation Changes and Responsive Layout
