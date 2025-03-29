@@ -2,13 +2,13 @@
 -- Configuration for the LÖVE application
 
 function love.conf(t)
-    t.title = "Lövie - LÖVE Framework Demo Collection"
+    t.title = "Lövie - LÖVE Framework Showcase"
     t.version = "11.4"  -- The LÖVE version this game was made for
     t.console = true    -- Attach a console for debugging
 
     -- Window settings
-    t.window.width = 800
-    t.window.height = 600
+    t.window.width = 1200
+    t.window.height = 800
     t.window.resizable = true
     t.window.vsync = 1
 

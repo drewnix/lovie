@@ -15,9 +15,7 @@ _G.SceneManager = SceneManager
 
 -- Load all scenes
 local scenes = {
-    -- menu = require('scenes.absolute-minimal-menu'),
-    menu = require('scenes.diagnostic-menu'),
-    -- menu = require('scenes.menu'),
+    menu = require('scenes.menu'),
     basic_drawing = require('scenes.basic_drawing'),
     animations = require('scenes.animations'),
     physics = require('scenes.physics'),
@@ -28,7 +26,10 @@ local scenes = {
     -- New scenes added
     camera_systems = require('scenes.camera_systems'),
     resolution_management = require('scenes.resolution_management'),
-    shaders = require('scenes.shaders')
+    shaders = require('scenes.shaders'),
+
+    -- Debug scene
+    debug_scene = require('scenes.debug_scene')
 }
 
 function love.load()
@@ -120,6 +121,20 @@ function love.wheelmoved(x, y)
     -- Pass wheel movement to current scene if it has the handler
     if SceneManager.current and SceneManager.scenes[SceneManager.current].wheelmoved then
         SceneManager.scenes[SceneManager.current].wheelmoved(x, y)
+    end
+end
+
+function love.textinput(text)
+    -- Pass text input to current scene if it has the handler
+    if SceneManager.current and SceneManager.scenes[SceneManager.current].textinput then
+        SceneManager.scenes[SceneManager.current].textinput(text)
+    end
+end
+
+function love.mousemoved(x, y, dx, dy)
+    -- Pass mouse movement to current scene if it has the handler
+    if SceneManager.current and SceneManager.scenes[SceneManager.current].mousemoved then
+        SceneManager.scenes[SceneManager.current].mousemoved(x, y, dx, dy)
     end
 end
 

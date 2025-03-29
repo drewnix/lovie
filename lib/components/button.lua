@@ -14,6 +14,9 @@ function Button.new(x, y, width, height, text, options)
     self.width = width
     self.height = height
     self.text = text or ""
+    self.visible = true
+    self.renderOffsetX = 0
+    self.renderOffsetY = 0
 
     options = options or {}
     self.color = options.color or {0.4, 0.5, 0.6}  -- Neutral blue-gray
@@ -32,10 +35,14 @@ function Button.new(x, y, width, height, text, options)
 end
 
 function Button:update(dt)
-    if not self.isEnabled then return end
+    if not self.isEnabled or not self.visible then return end
 
     local mouseX, mouseY = love.mouse.getPosition()
-    self.isHovered = Utils.pointInRect(mouseX, mouseY, self.x, self.y, self.width, self.height)
+    self.isHovered = Utils.pointInRect(mouseX, mouseY,
+                                      self.x,
+                                      self.y + self.renderOffsetY,
+                                      self.width,
+                                      self.height)
 
     if self.isPressed and not love.mouse.isDown(1) then
         self.isPressed = false
@@ -46,7 +53,7 @@ function Button:update(dt)
 end
 
 function Button:mousepressed(x, y, button)
-    if not self.isEnabled then return end
+    if not self.isEnabled or not self.visible then return false end
 
     if button == 1 and self.isHovered then
         self.isPressed = true
@@ -56,7 +63,7 @@ function Button:mousepressed(x, y, button)
 end
 
 function Button:mousereleased(x, y, button)
-    if not self.isEnabled then return end
+    if not self.isEnabled or not self.visible then return false end
 
     if button == 1 and self.isPressed then
         self.isPressed = false
@@ -69,6 +76,8 @@ function Button:mousereleased(x, y, button)
 end
 
 function Button:draw()
+    if not self.visible then return end
+
     -- Determine the current color based on state
     local currentColor
     if not self.isEnabled then
@@ -81,16 +90,20 @@ function Button:draw()
         currentColor = self.color
     end
 
+    -- Calculate render position with offset
+    local renderX = self.x + self.renderOffsetX
+    local renderY = self.y + self.renderOffsetY
+
     -- Draw button background
     love.graphics.setColor(currentColor)
-    Utils.drawRoundedRect(self.x, self.y, self.width, self.height, self.cornerRadius)
+    Utils.drawRoundedRect(renderX, renderY, self.width, self.height, self.cornerRadius)
 
     -- Draw button text
     love.graphics.setColor(self.textColor)
     love.graphics.printf(
         self.text,
-        self.x,
-        self.y + (self.height / 2) - (love.graphics.getFont():getHeight() / 2),
+        renderX,
+        renderY + (self.height / 2) - (love.graphics.getFont():getHeight() / 2),
         self.width,
         "center"
     )
@@ -108,6 +121,10 @@ function Button:setPosition(x, y)
     self.y = y
 end
 
+function Button:getPosition()
+    return self.x, self.y
+end
+
 function Button:setDimensions(width, height)
     self.width = width
     self.height = height
@@ -119,6 +136,19 @@ end
 
 function Button:setOnClick(callback)
     self.onClick = callback
+end
+
+function Button:setVisible(visible)
+    self.visible = visible
+end
+
+function Button:isVisible()
+    return self.visible
+end
+
+function Button:setRenderOffset(x, y)
+    self.renderOffsetX = x
+    self.renderOffsetY = y
 end
 
 return Button

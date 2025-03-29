@@ -1,44 +1,131 @@
 -- scenes/menu.lua
--- Improved menu scene with better visuals and feedback
+-- Enhanced menu scene with categories, scrolling, and pagination for many scenes
 
-local SceneManager = require('lib.sceneManager')
+-- Use the global SceneManager to avoid circular dependencies
+local SceneManager = _G.SceneManager
 local Button = require('lib.components.button')
 local Utils = require('lib.utils')
 
 local Menu = {}
 
-local title = "Lövie Demo Collection"
-local subtitle = "A showcase of LÖVE framework features"
-local buttons = {}
+local title = "Lövie"
+local subtitle = "Löve Showcase"
+
+-- Menu UI configuration
 local buttonHeight = 50
 local buttonWidth = 300
-local buttonSpacing = 20
+local buttonSpacing = 10
+local categorySpacing = 30
+local columnSpacing = 50
+local columnWidth = buttonWidth + columnSpacing
+local maxColumns = 3 -- Maximum number of columns to use
 
--- Additional visual elements
+-- Scroll configuration
+local scrollY = 0
+local scrollSpeed = 400
+local scrollableArea = {
+    x = 0,
+    y = 200,
+    width = 0, -- Set at runtime
+    height = 0  -- Set at runtime
+}
+local contentHeight = 0
+local scrollbarWidth = 10
+local isScrolling = false
+local scrollbarGrabbed = false
+local scrollGrabOffset = 0
+
+-- Categories and scenes organization
+local categories = {
+    { name = "Basics", color = {0.4, 0.6, 0.8} },
+    { name = "Graphics", color = {0.8, 0.4, 0.6} },
+    { name = "Audio & Input", color = {0.4, 0.7, 0.4} },
+    { name = "Systems", color = {0.7, 0.5, 0.8} },
+    { name = "Debug", color = {0.5, 0.5, 0.7} }
+}
+
+-- Scene to category mapping
+local categoryMap = {
+    -- Basics
+    basic_drawing = "Basics",
+    documentation = "Basics",
+
+    -- Graphics
+    animations = "Graphics",
+    particles = "Graphics",
+    shaders = "Graphics",
+
+    -- Audio & Input
+    audio = "Audio & Input",
+
+    -- Systems
+    physics = "Systems",
+    camera_systems = "Systems",
+    resolution_management = "Systems",
+
+    -- Debug
+    debug_scene = "Debug"
+}
+
+-- Visual elements
+local buttons = {}
+local categorizedButtons = {}
 local logoRotation = 0
 local backgroundPattern = {}
 local fadeInAlpha = 0
 local lastMouseX, lastMouseY = 0, 0
 local mouseParticles = nil
 
+-- Search functionality
+local searchText = ""
+local searchActive = false
+local searchResults = {}
+local searchFont = nil
+
 function Menu.enter()
     print("Menu.enter() called")
-    -- Set up buttons for each scene
-    buttons = {}
+    initializeMenu()
+    initializeVisuals()
+    updateScrollableArea()
 
+    -- Start with fade-in effect
+    fadeInAlpha = 0
+    scrollY = 0
+
+    -- Initialize font for search
+    searchFont = love.graphics.newFont(16)
+end
+
+function initializeMenu()
+    -- Clear old buttons
+    buttons = {}
+    categorizedButtons = {}
+
+    -- Get all scene names
     local sceneNames = SceneManager.getAllSceneNames()
     table.sort(sceneNames)
 
-    local buttonY = 200
+    -- Initialize category structure
+    for _, category in ipairs(categories) do
+        categorizedButtons[category.name] = {
+            name = category.name,
+            color = category.color,
+            buttons = {}
+        }
+    end
+
+    -- Categorize each scene
     for _, sceneName in ipairs(sceneNames) do
         -- Skip the menu itself
         if sceneName ~= "menu" then
             local displayName = sceneName:gsub("_", " ")
             displayName = displayName:gsub("^%l", string.upper) -- Capitalize first letter
 
+            -- Find which category this scene belongs to
+            local categoryName = categoryMap[sceneName] or "Debug"
+
             local button = Button.new(
-                (love.graphics.getWidth() - buttonWidth) / 2,
-                buttonY,
+                0, 0, -- Position will be set later
                 buttonWidth,
                 buttonHeight,
                 displayName,
@@ -47,16 +134,97 @@ function Menu.enter()
                         print("Switching to scene: " .. sceneName)
                         SceneManager.switchTo(sceneName)
                     end,
-                    -- Use a different color for each button
                     color = generateColorForScene(sceneName)
                 }
             )
 
+            -- Add to overall buttons list and categorized list
             table.insert(buttons, button)
-            buttonY = buttonY + buttonHeight + buttonSpacing
+            table.insert(categorizedButtons[categoryName].buttons, {
+                button = button,
+                sceneName = sceneName,
+                displayName = displayName
+            })
         end
     end
 
+    -- Position all buttons according to categories
+    positionButtons()
+end
+
+function positionButtons()
+    local windowWidth = love.graphics.getWidth()
+
+    -- Calculate how many columns we can fit
+    local availableWidth = windowWidth - 100  -- 50px margin on each side
+    local numColumns = math.min(maxColumns, math.floor(availableWidth / columnWidth))
+    numColumns = math.max(1, numColumns)  -- At least 1 column
+
+    -- Calculate starting X position for the columns
+    local startX = (windowWidth - (numColumns * columnWidth - columnSpacing)) / 2
+
+    -- Reset content height
+    local y = 0
+
+    -- For each category
+    for _, category in ipairs(categories) do
+        local categoryButtons = categorizedButtons[category.name]
+
+        -- Skip empty categories
+        if #categoryButtons.buttons > 0 then
+            -- Add space for category header (affects all columns)
+            y = y + 60  -- More space for category headers
+
+            -- Remember category header position for drawing
+            categoryButtons.headerY = y - 40
+
+            -- Track column heights for this category
+            local columnHeights = {}
+            for i = 1, numColumns do
+                columnHeights[i] = 0
+            end
+
+            -- Position each button in the category
+            for i, buttonInfo in ipairs(categoryButtons.buttons) do
+                -- Determine which column to place this button in
+                local columnIndex = ((i-1) % numColumns) + 1
+
+                -- Calculate button position
+                local x = startX + (columnIndex-1) * columnWidth
+                local localY = y + columnHeights[columnIndex]
+
+                -- Position the button
+                buttonInfo.button:setPosition(x, localY)
+
+                -- Update the height of this column
+                columnHeights[columnIndex] = columnHeights[columnIndex] + buttonHeight + buttonSpacing
+            end
+
+            -- Find the tallest column in this category
+            local maxColumnHeight = 0
+            for i = 1, numColumns do
+                maxColumnHeight = math.max(maxColumnHeight, columnHeights[i])
+            end
+
+            -- Update y based on the tallest column
+            y = y + maxColumnHeight
+
+            -- Add space after the category
+            y = y + categorySpacing
+        end
+    end
+
+    -- Set content height for scrolling
+    contentHeight = y
+end
+
+function updateScrollableArea()
+    -- Update scrollable area dimensions based on window size
+    scrollableArea.width = love.graphics.getWidth()
+    scrollableArea.height = love.graphics.getHeight() - scrollableArea.y - 80 -- Leave space for footer
+end
+
+function initializeVisuals()
     -- Initialize background pattern
     backgroundPattern = {}
     for i = 1, 30 do
@@ -86,9 +254,6 @@ function Menu.enter()
         0, 0, 0, 0        -- Fade out
     )
     mouseParticles:setSizes(0.5, 0.3, 0.1)
-
-    -- Start with fade-in effect
-    fadeInAlpha = 0
 
     -- Store initial mouse position
     lastMouseX, lastMouseY = love.mouse.getPosition()
@@ -121,9 +286,44 @@ function Menu.update(dt)
     lastMouseX, lastMouseY = mouseX, mouseY
     mouseParticles:update(dt)
 
+    -- Update scrolling
+    updateScrolling(dt)
+
+    -- Update buttons visibility based on scroll position
+    for _, button in ipairs(buttons) do
+        local x, y = button:getPosition()
+        local visible = (y + scrollY >= scrollableArea.y - buttonHeight) and
+                        (y + scrollY <= scrollableArea.y + scrollableArea.height)
+        button:setVisible(visible)
+
+        -- Update button's rendered position based on scroll
+        button:setRenderOffset(0, scrollY)
+    end
+
     -- Update buttons
     for _, button in ipairs(buttons) do
         button:update(dt)
+    end
+
+    -- If we're searching, filter and position results
+    if searchActive then
+        updateSearchResults()
+    end
+end
+
+function updateScrolling(dt)
+    -- If scrollbar is being dragged
+    if scrollbarGrabbed then
+        local mouseY = love.mouse.getY()
+        local scrollbarHeight = (scrollableArea.height / contentHeight) * scrollableArea.height
+        local maxScroll = scrollableArea.height - scrollbarHeight
+        local normalizedPosition = (mouseY - scrollGrabOffset - scrollableArea.y) / maxScroll
+
+        -- Set scroll position based on scrollbar
+        scrollY = -normalizedPosition * (contentHeight - scrollableArea.height)
+
+        -- Clamp scroll position
+        scrollY = math.max(-(contentHeight - scrollableArea.height), math.min(0, scrollY))
     end
 end
 
@@ -132,16 +332,55 @@ function Menu.draw()
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.setBlendMode("alpha")
 
-    -- Draw background
-    love.graphics.setColor(0.15, 0.15, 0.2)
-    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-
     -- Draw background pattern
     for _, item in ipairs(backgroundPattern) do
         love.graphics.setColor(item.color)
         love.graphics.circle("fill", item.x, item.y, item.size)
     end
 
+    -- Draw header
+    drawHeader()
+
+    -- Set up the scissor for the scrollable area
+    love.graphics.setScissor(
+        scrollableArea.x,
+        scrollableArea.y,
+        scrollableArea.width,
+        scrollableArea.height
+    )
+
+    if searchActive then
+        -- Draw search results
+        drawSearchResults()
+    else
+        -- Draw categories and buttons
+        drawCategoriesAndButtons()
+    end
+
+    -- Reset scissor
+    love.graphics.setScissor()
+
+    -- Draw scrollbar if needed
+    if contentHeight > scrollableArea.height then
+        drawScrollbar()
+    end
+
+    -- Draw search bar
+    drawSearchBar()
+
+    -- Draw footer
+    drawFooter()
+
+    -- Draw mouse particles
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.draw(mouseParticles)
+
+    -- Reset font and color
+    love.graphics.setFont(love.graphics.newFont(12))
+    love.graphics.setColor(1, 1, 1)
+end
+
+function drawHeader()
     -- Draw decorative header bar
     local headerGradient = {
         0.2, 0.3, 0.4, 1,
@@ -167,23 +406,169 @@ function Menu.draw()
     love.graphics.setColor(0.9, 0.9, 1, 0.8)
     love.graphics.printf(subtitle, 0, 80, love.graphics.getWidth(), "center")
 
-    -- Draw mouse particles
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.draw(mouseParticles)
-
     -- Draw section header
     love.graphics.setColor(0.7, 0.8, 1, 0.8)
     love.graphics.setFont(love.graphics.newFont(20))
     love.graphics.printf("Available Demos", 0, 160, love.graphics.getWidth(), "center")
+end
+
+function drawCategoriesAndButtons()
+    -- For each category
+    for _, category in ipairs(categories) do
+        local categoryButtons = categorizedButtons[category.name]
+
+        -- Skip empty categories
+        if #categoryButtons.buttons > 0 and categoryButtons.headerY then
+            local headerY = categoryButtons.headerY + scrollY
+
+            -- Only draw if the category header is visible
+            if headerY >= scrollableArea.y - 40 and headerY <= scrollableArea.y + scrollableArea.height then
+                -- Draw category header
+                love.graphics.setColor(category.color[1], category.color[2], category.color[3], 0.9)
+                love.graphics.setFont(love.graphics.newFont(22))
+                love.graphics.printf(
+                    category.name,
+                    scrollableArea.x,
+                    headerY,
+                    scrollableArea.width,
+                    "center"
+                )
+
+                -- Draw a line under the category header
+                love.graphics.setColor(category.color[1], category.color[2], category.color[3], 0.5)
+                love.graphics.setLineWidth(2)
+                love.graphics.line(
+                    scrollableArea.x + scrollableArea.width * 0.3,
+                    headerY + 30,
+                    scrollableArea.x + scrollableArea.width * 0.7,
+                    headerY + 30
+                )
+            end
+        end
+    end
 
     -- Draw buttons with fade-in effect
     love.graphics.setColor(1, 1, 1, fadeInAlpha)
     for _, button in ipairs(buttons) do
-        button:draw()
+        if button:isVisible() then
+            button:draw()
+        end
+    end
+end
+
+function drawSearchResults()
+    if #searchResults == 0 then
+        -- No results
+        love.graphics.setColor(1, 1, 1, 0.8)
+        love.graphics.setFont(searchFont)
+        love.graphics.printf(
+            "No results found for '" .. searchText .. "'",
+            0,
+            scrollableArea.y + 40,
+            love.graphics.getWidth(),
+            "center"
+        )
+    else
+        -- Draw search result title
+        love.graphics.setColor(0.7, 0.8, 1, 0.9)
+        love.graphics.setFont(searchFont)
+        love.graphics.printf(
+            "Search results for '" .. searchText .. "':",
+            0,
+            scrollableArea.y + 10,
+            love.graphics.getWidth(),
+            "center"
+        )
+
+        -- Draw each search result button
+        love.graphics.setColor(1, 1, 1, fadeInAlpha)
+        for _, resultInfo in ipairs(searchResults) do
+            if resultInfo.button:isVisible() then
+                resultInfo.button:draw()
+            end
+        end
+    end
+end
+
+function drawScrollbar()
+    -- Calculate scrollbar dimensions
+    local scrollbarHeight = (scrollableArea.height / contentHeight) * scrollableArea.height
+    local scrollbarY = scrollableArea.y + (-scrollY / contentHeight) * scrollableArea.height
+
+    -- Draw scrollbar track
+    love.graphics.setColor(0.2, 0.2, 0.3, 0.5)
+    love.graphics.rectangle(
+        "fill",
+        scrollableArea.x + scrollableArea.width - scrollbarWidth,
+        scrollableArea.y,
+        scrollbarWidth,
+        scrollableArea.height
+    )
+
+    -- Draw scrollbar thumb
+    love.graphics.setColor(0.4, 0.5, 0.7, 0.8)
+    love.graphics.rectangle(
+        "fill",
+        scrollableArea.x + scrollableArea.width - scrollbarWidth,
+        scrollbarY,
+        scrollbarWidth,
+        scrollbarHeight
+    )
+end
+
+function drawSearchBar()
+    -- Draw search bar background
+    love.graphics.setColor(0.2, 0.2, 0.3, 0.7)
+    love.graphics.rectangle(
+        "fill",
+        (love.graphics.getWidth() - 300) / 2,
+        130,
+        300,
+        30
+    )
+
+    -- Draw search text
+    love.graphics.setColor(1, 1, 1, 0.9)
+    love.graphics.setFont(searchFont)
+
+    local displayText = searchText
+    if #displayText == 0 then
+        love.graphics.setColor(0.7, 0.7, 0.8, 0.7)
+        displayText = "Search scenes..."
     end
 
+    love.graphics.printf(
+        displayText,
+        (love.graphics.getWidth() - 280) / 2,
+        134,
+        280,
+        "left"
+    )
+
+    -- Draw cursor if search is active
+    if searchActive and (love.timer.getTime() % 1 < 0.5) then
+        local textWidth = searchFont:getWidth(searchText)
+        love.graphics.setColor(1, 1, 1, 0.9)
+        love.graphics.rectangle(
+            "fill",
+            (love.graphics.getWidth() - 280) / 2 + textWidth + 5,
+            134,
+            2,
+            22
+        )
+    end
+end
+
+function drawFooter()
+    -- Calculate footer position
+    local footerY = love.graphics.getHeight() - 80
+
     -- Draw footer bar
-    drawGradientBox(0, love.graphics.getHeight() - 80, love.graphics.getWidth(), 80, headerGradient, "vertical")
+    local footerGradient = {
+        0.2, 0.3, 0.4, 1,
+        0.3, 0.4, 0.5, 1
+    }
+    drawGradientBox(0, footerY, love.graphics.getWidth(), 80, footerGradient, "vertical")
 
     -- Draw footer text
     love.graphics.setColor(1, 1, 1, 0.8)
@@ -191,7 +576,18 @@ function Menu.draw()
     love.graphics.printf(
         "Press 'M' at any time to return to this menu",
         0,
-        love.graphics.getHeight() - 50,
+        footerY + 20,
+        love.graphics.getWidth(),
+        "center"
+    )
+
+    -- Draw keyboard shortcuts
+    love.graphics.setColor(0.9, 0.9, 1, 0.7)
+    love.graphics.setFont(love.graphics.newFont(12))
+    love.graphics.printf(
+        "Scroll: Mouse wheel or Page Up/Down | Search: Start typing",
+        0,
+        footerY + 40,
         love.graphics.getWidth(),
         "center"
     )
@@ -202,29 +598,142 @@ function Menu.draw()
     love.graphics.printf(
         "LÖVE " .. love._version,
         0,
-        love.graphics.getHeight() - 30,
+        footerY + 60,
         love.graphics.getWidth() - 20,
         "right"
     )
-
-    -- Reset font and color
-    love.graphics.setFont(love.graphics.newFont(12))
-    love.graphics.setColor(1, 1, 1)
 end
 
 function Menu.mousepressed(x, y, button)
+    -- Check if we're clicking on the scrollbar
+    if isPointInScrollbar(x, y) then
+        scrollbarGrabbed = true
+
+        -- Calculate grab offset
+        local scrollbarHeight = (scrollableArea.height / contentHeight) * scrollableArea.height
+        local scrollbarY = scrollableArea.y + (-scrollY / contentHeight) * scrollableArea.height
+        scrollGrabOffset = y - scrollbarY
+
+        return
+    end
+
+    -- Check if we're clicking in the search bar
+    if x >= (love.graphics.getWidth() - 300) / 2 and
+       x <= (love.graphics.getWidth() + 300) / 2 and
+       y >= 130 and y <= 160 then
+        searchActive = true
+        return
+    else
+        -- If we click outside the search bar and it's active, deactivate it
+        if searchActive then
+            searchActive = false
+            -- If we had search results, reset them
+            if #searchText > 0 then
+                searchText = ""
+                searchResults = {}
+                initializeMenu()
+            end
+        end
+    end
+
+    -- Check if we're clicking on a button
     for _, btn in ipairs(buttons) do
-        if btn:mousepressed(x, y, button) then
+        if btn:isVisible() and btn:mousepressed(x, y, button) then
             return
         end
     end
 end
 
 function Menu.mousereleased(x, y, button)
+    -- Release scrollbar grab
+    if scrollbarGrabbed then
+        scrollbarGrabbed = false
+        return
+    end
+
+    -- Check button releases
     for _, btn in ipairs(buttons) do
-        if btn:mousereleased(x, y, button) then
+        if btn:isVisible() and btn:mousereleased(x, y, button) then
             return
         end
+    end
+end
+
+function Menu.wheelmoved(x, y)
+    -- Vertical scrolling with mouse wheel
+    if not searchActive or #searchResults > 0 then
+        scrollY = scrollY + y * 30
+
+        -- Clamp scroll position
+        local minScroll = math.min(0, -(contentHeight - scrollableArea.height))
+        scrollY = math.max(minScroll, math.min(0, scrollY))
+    end
+end
+
+function Menu.keypressed(key)
+    -- Handle search input
+    if searchActive then
+        if key == "escape" then
+            searchActive = false
+            searchText = ""
+            searchResults = {}
+            initializeMenu()
+        elseif key == "backspace" then
+            searchText = searchText:sub(1, -2)
+            updateSearchResults()
+        elseif key == "return" then
+            searchActive = false
+            -- If we have exactly one result, navigate to it
+            if #searchResults == 1 then
+                local sceneName = searchResults[1].sceneName
+                print("Navigating to search result: " .. sceneName)
+                SceneManager.switchTo(sceneName)
+            end
+        end
+    else
+        -- Special keys for navigation when not searching
+        if key == "pageup" then
+            -- Scroll up a page
+            scrollY = scrollY + scrollableArea.height * 0.8
+            scrollY = math.min(0, scrollY)
+        elseif key == "pagedown" then
+            -- Scroll down a page
+            scrollY = scrollY - scrollableArea.height * 0.8
+            local minScroll = math.min(0, -(contentHeight - scrollableArea.height))
+            scrollY = math.max(minScroll, scrollY)
+        elseif key == "home" then
+            -- Scroll to top
+            scrollY = 0
+        elseif key == "end" then
+            -- Scroll to bottom
+            scrollY = -(contentHeight - scrollableArea.height)
+            scrollY = math.max(scrollY, -(contentHeight - scrollableArea.height))
+        elseif key:len() == 1 and key:match("[%w]") then
+            -- Start search on alphanumeric key press
+            searchActive = true
+            searchText = key
+            updateSearchResults()
+        end
+    end
+end
+
+function Menu.textinput(text)
+    if searchActive then
+        searchText = searchText .. text
+        updateSearchResults()
+    end
+end
+
+function Menu.resize(w, h)
+    -- Update scrollable area
+    updateScrollableArea()
+
+    -- Update button positions
+    positionButtons()
+
+    -- Update search results positioning if active
+    if searchActive and #searchResults > 0 then
+        positionSearchResults()
     end
 end
 
@@ -232,14 +741,99 @@ function Menu.mousemoved(x, y, dx, dy)
     lastMouseX, lastMouseY = x, y
 end
 
--- Window resize handling
-function Menu.resize(w, h)
-    -- Recenter all buttons
-    local buttonY = 200
-    for _, button in ipairs(buttons) do
-        button:setPosition((w - buttonWidth) / 2, buttonY)
-        buttonY = buttonY + buttonHeight + buttonSpacing
+-- Utility Functions
+
+function updateSearchResults()
+    -- Clear previous results
+    searchResults = {}
+
+    -- Skip if search text is empty
+    if #searchText == 0 then
+        initializeMenu()
+        return
     end
+
+    -- Search through all buttons
+    local searchPattern = searchText:lower()
+
+    for _, category in pairs(categorizedButtons) do
+        for _, buttonInfo in ipairs(category.buttons) do
+            local sceneName = buttonInfo.sceneName
+            local displayName = buttonInfo.displayName:lower()
+
+            -- Check if the display name or scene name contains the search text
+            if displayName:find(searchPattern) or sceneName:find(searchPattern) then
+                table.insert(searchResults, {
+                    button = buttonInfo.button,
+                    sceneName = sceneName,
+                    displayName = buttonInfo.displayName
+                })
+            end
+        end
+    end
+
+    -- Position the search results
+    positionSearchResults()
+end
+
+function positionSearchResults()
+    -- Calculate columns for search results
+    local windowWidth = love.graphics.getWidth()
+
+    -- Calculate how many columns we can fit
+    local availableWidth = windowWidth - 100  -- 50px margin on each side
+    local numColumns = math.min(maxColumns, math.floor(availableWidth / columnWidth))
+    numColumns = math.max(1, numColumns)  -- At least 1 column
+
+    -- Calculate starting X position for the columns
+    local startX = (windowWidth - (numColumns * columnWidth - columnSpacing)) / 2
+
+    -- Start position for search results
+    local y = scrollableArea.y + 60  -- Start below the search results title
+
+    -- Track column heights
+    local columnHeights = {}
+    for i = 1, numColumns do
+        columnHeights[i] = 0
+    end
+
+    -- Position each search result in columns
+    for i, resultInfo in ipairs(searchResults) do
+        -- Determine which column to place this button in
+        local columnIndex = ((i-1) % numColumns) + 1
+
+        -- Calculate button position
+        local x = startX + (columnIndex-1) * columnWidth
+        local localY = y + columnHeights[columnIndex] - scrollY
+
+        -- Position the button
+        resultInfo.button:setPosition(x, localY)
+
+        -- Update the height of this column
+        columnHeights[columnIndex] = columnHeights[columnIndex] + buttonHeight + buttonSpacing
+    end
+
+    -- Find the tallest column
+    local maxColumnHeight = 0
+    for i = 1, numColumns do
+        maxColumnHeight = math.max(maxColumnHeight, columnHeights[i])
+    end
+
+    -- Set content height for scrolling
+    contentHeight = math.max(scrollableArea.height, y + maxColumnHeight - scrollableArea.y)
+end
+
+function isPointInScrollbar(x, y)
+    -- Only check if we need a scrollbar
+    if contentHeight <= scrollableArea.height then
+        return false
+    end
+
+    -- Check if point is inside scrollbar area
+    return x >= scrollableArea.x + scrollableArea.width - scrollbarWidth and
+           x <= scrollableArea.x + scrollableArea.width and
+           y >= scrollableArea.y and
+           y <= scrollableArea.y + scrollableArea.height
 end
 
 -- Helper function to generate a unique color for each scene
@@ -251,14 +845,15 @@ function generateColorForScene(sceneName)
         particles = { 0.7, 0.5, 0.8 },   -- Purple
         audio = { 0.8, 0.7, 0.3 },       -- Gold
         documentation = { 0.5, 0.5, 0.7 }, -- Slate blue
-        camera_systems = { 0.5, 0.5, 0.7 }, -- Slate blue
-        resolution_management = { 0.5, 0.5, 0.7 }, -- Slate blue
-        shaders = { 0.5, 0.5, 0.7 } -- Slate blue
+        camera_systems = { 0.6, 0.4, 0.2 }, -- Brown
+        resolution_management = { 0.2, 0.6, 0.6 }, -- Teal
+        shaders = { 0.7, 0.3, 0.7 }, -- Purple
+        debug_scene = { 0.5, 0.5, 0.5 } -- Gray
     }
     return colors[sceneName] or { 0.4, 0.5, 0.6 } -- Default blue-gray
 end
 
--- Helper function to draw a gradient box - FIXED VERSION
+-- Helper function to draw a gradient box
 function drawGradientBox(x, y, width, height, colors, direction)
     direction = direction or "horizontal"
 
