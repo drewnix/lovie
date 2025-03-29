@@ -29,7 +29,7 @@ else
 endif
 
 # Main targets
-.PHONY: all run clean package help
+.PHONY: all run clean package help new-scene
 
 # Default target runs the help command
 all: help
@@ -65,72 +65,11 @@ endif
 
 # Create a new empty scene template
 new-scene:
-	@read -p "Enter scene name (lowercase, use underscores for spaces): " scene_name; \
-	scene_file=scenes/$${scene_name}.lua; \
-	if [ -f $$scene_file ]; then \
-		echo "Scene already exists: $$scene_file"; \
-	else \
-		echo "Creating new scene: $$scene_file"; \
-		cat > $$scene_file << EOF \
--- scenes/$${scene_name}.lua\
--- Description of what this scene demonstrates\
-\
-local $${scene_name^} = {\
-    title = "$${scene_name^}",\
-    description = "Description of what this scene demonstrates"\
-}\
-\
-function $${scene_name^}.enter()\
-    -- Called when entering the scene\
-    -- Initialize variables, load resources, set up the scene\
-end\
-\
-function $${scene_name^}.exit()\
-    -- Called when leaving the scene\
-    -- Clean up resources, stop sounds, etc.\
-end\
-\
-function $${scene_name^}.update(dt)\
-    -- Called every frame with delta time\
-    -- Update game logic, animations, etc.\
-end\
-\
-function $${scene_name^}.draw()\
-    -- Draw background\
-    love.graphics.setColor(0.2, 0.2, 0.3)\
-    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())\
-    \
-    -- Draw title and description\
-    love.graphics.setColor(1, 1, 1)\
-    love.graphics.setFont(love.graphics.newFont(24))\
-    love.graphics.printf($${scene_name^}.title, 0, 20, love.graphics.getWidth(), "center")\
-    \
-    love.graphics.setFont(love.graphics.newFont(16))\
-    love.graphics.printf($${scene_name^}.description, 0, 60, love.graphics.getWidth(), "center")\
-    \
-    -- Draw your scene content here\
-    \
-    -- Reset font and color\
-    love.graphics.setFont(love.graphics.newFont(12))\
-    love.graphics.setColor(1, 1, 1)\
-end\
-\
-function $${scene_name^}.keypressed(key)\
-    -- Handle key presses\
-end\
-\
-function $${scene_name^}.mousepressed(x, y, button)\
-    -- Handle mouse presses\
-end\
-\
-function $${scene_name^}.mousereleased(x, y, button)\
-    -- Handle mouse releases\
-end\
-\
-return $${scene_name^}\
-EOF\
-		echo "Remember to add your new scene to main.lua!"; \
-	fi
+	@if [ -z "$(name)" ]; then \
+		echo "Usage: make new-scene name=your_scene_name"; \
+		exit 1; \
+	fi; \
+	./scripts/create_scene.sh "$(name)"
 
 # Check if LÖVE is installed
 check-love:
@@ -146,13 +85,13 @@ check-love:
 help:
 	@echo "Lövie LÖVE Framework Demo Collection - Makefile commands:"
 	@echo ""
-	@echo "  make run          - Run the LÖVE project"
-	@echo "  make package      - Create a .love file for distribution"
-	@echo "  make clean        - Clean temporary files"
-	@echo "  make windows      - Create a Windows executable (Windows only)"
-	@echo "  make new-scene    - Create a new scene template"
-	@echo "  make check-love   - Check if LÖVE is installed"
-	@echo "  make help         - Display this help message"
+	@echo "  make run                        - Run the LÖVE project"
+	@echo "  make package                    - Create a .love file for distribution"
+	@echo "  make clean                      - Clean temporary files"
+	@echo "  make windows                    - Create a Windows executable (Windows only)"
+	@echo "  make new-scene name=scene_name  - Create a new scene template"
+	@echo "  make check-love                 - Check if LÖVE is installed"
+	@echo "  make help                       - Display this help message"
 	@echo ""
 	@echo "Current detected OS: $(DETECTED_OS)"
 	@echo "LÖVE executable: $(LOVE_EXECUTABLE)"

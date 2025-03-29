@@ -58,9 +58,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- The amazing [LÖVE](https://love2d.org/) framework and its community
-- All contributors who help expand the demo collection
-- Everyone who provides feedback and suggestions
