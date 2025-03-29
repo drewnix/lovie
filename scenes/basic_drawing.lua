@@ -5,7 +5,8 @@ local Utils = require('lib.utils')
 
 local BasicDrawing = {
     title = "Basic Drawing",
-    description = "Demonstrates basic shapes and drawing functions in LÖVE"
+    description = "Demonstrates basic shapes and drawing functions in LÖVE",
+    category = "Basics"
 }
 
 local shapes = {}

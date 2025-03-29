@@ -7,7 +7,8 @@ local Utils = require('lib.utils')
 
 local CameraSystems = {
     title = "Camera Systems",
-    description = "Demonstrates following, lerping, boundaries, and camera effects"
+    description = "Demonstrates following, lerping, boundaries, and camera effects",
+    category = "Systems"
 }
 
 -- Player entity that the camera follows

@@ -74,6 +74,8 @@ function Menu.enter()
     fadeInAlpha = 0
     scrollY = 0
 
+    -- Scrollable area initialized
+
     -- Initialize font for search
     searchFont = love.graphics.newFont(16)
 end
@@ -105,7 +107,17 @@ function initializeMenu()
 
             -- Get category from the scene or from the category map
             local scene = SceneManager.scenes[sceneName]
-            local categoryName = (scene and scene.category) or categoryMap[sceneName] or "Debug"
+            -- First check if scene has category, then check categoryMap, then default to Debug
+            local categoryName = "Debug"
+            if scene and scene.category then
+                categoryName = scene.category
+            elseif categoryMap[sceneName] then
+                categoryName = categoryMap[sceneName]
+            end
+            -- Debug output to help diagnose why scene doesn't appear in the category
+            if categoryName == "Basics" then
+                print("Adding scene to Basics:", sceneName, "Category:", categoryName)
+            end
 
             -- Create button for the scene
             local button = Button.new(
@@ -147,8 +159,8 @@ function positionButtons()
     -- Calculate starting X position for the columns
     local startX = (windowWidth - (numColumns * columnWidth - columnSpacing)) / 2
 
-    -- Reset content height
-    local y = 0
+    -- Start at the top of the scrollable area to fix visibility issues
+    local y = scrollableArea.y
 
     -- For each category
     for _, category in ipairs(categories) do
@@ -156,6 +168,14 @@ function positionButtons()
 
         -- Skip empty categories
         if #categoryButtons.buttons > 0 then
+            -- Debug output
+            if category.name == "Basics" then
+                print("Basics category has", #categoryButtons.buttons, "buttons")
+                for i, btnInfo in ipairs(categoryButtons.buttons) do
+                    print("  Button", i, ":", btnInfo.sceneName)
+                end
+            end
+
             -- Add space for category header (affects all columns)
             y = y + 60  -- More space for category headers
 
@@ -200,6 +220,8 @@ function positionButtons()
 
     -- Set content height for scrolling
     contentHeight = y
+
+    -- Debug complete
 end
 
 function updateScrollableArea()
@@ -397,13 +419,15 @@ function drawHeader()
 end
 
 function drawCategoriesAndButtons()
-    -- For each category
+    -- Draw each category with its buttons
     for _, category in ipairs(categories) do
         local categoryButtons = categorizedButtons[category.name]
 
         -- Skip empty categories
         if #categoryButtons.buttons > 0 and categoryButtons.headerY then
             local headerY = categoryButtons.headerY + scrollY
+
+            -- Category is visible if within scrollable area
 
             -- Only draw if the category header is visible
             if headerY >= scrollableArea.y - 40 and headerY <= scrollableArea.y + scrollableArea.height then
@@ -435,7 +459,7 @@ function drawCategoriesAndButtons()
     love.graphics.setColor(1, 1, 1, fadeInAlpha)
     for _, button in ipairs(buttons) do
         if button:isVisible() then
-            button:draw()
+            button:draw() -- Draw the button
         end
     end
 end

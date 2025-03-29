@@ -3,7 +3,7 @@
 ## Core Graphics
 - [x] Basic Drawing (shapes, colors, lines)
 - [x] Animations (tweening, sprite animations, transforms)
-- [ ] Camera Systems (following, lerping, shake effects) - TODO: BROKEN!
+- [x] Camera Systems (following, lerping, shake effects)
 - [x] Resolution Management (scaling, virtual resolution, pixel-perfect rendering)
 - [x] Shaders (post-processing, distortion effects, lighting)
 - [ ] Custom Rendering (render targets, canvas manipulation)

@@ -5,7 +5,8 @@ local Utils = require('lib.utils')
 
 local Animations = {
     title = "Animations",
-    description = "Demonstrates different animation techniques in LÖVE"
+    description = "Demonstrates different animation techniques in LÖVE",
+    category = "Graphics"
 }
 
 -- Animation examples

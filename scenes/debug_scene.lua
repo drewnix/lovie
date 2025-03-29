@@ -3,7 +3,8 @@
 
 local Debug = {
     title = "Debug Scene",
-    description = "Used to debug scene loading issues"
+    description = "Used to debug scene loading issues",
+    category = "Debug"
 }
 
 function Debug.enter()

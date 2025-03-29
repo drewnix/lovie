@@ -6,7 +6,8 @@ local Utils = require('lib.utils')
 
 local Audio = {
     title = "Audio Demo",
-    description = "Demonstrates audio playback and manipulation in LÖVE"
+    description = "Demonstrates audio playback and manipulation in LÖVE",
+    category = "Audio & Input"
 }
 
 -- Audio sources

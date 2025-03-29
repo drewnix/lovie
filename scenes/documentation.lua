@@ -1,24 +1,25 @@
 -- scenes/documentation.lua
--- Documentation scene showing L�VE framework features
+-- Documentation scene showing LÖVE framework features
 
 local Documentation = {
-    title = "L�VE Documentation",
-    description = "Overview of L�VE framework features"
+    title = "LÖVE Documentation",
+    description = "Overview of LÖVE framework features",
+    category = "Basics"
 }
 
 -- Content sections
 local sections = {
     {
-        title = "About L�VE",
-        content = "L�VE is a framework for making 2D games in Lua. It's free, open-source, and works on Windows, Mac OS X, Linux, Android and iOS."
+        title = "About LÖVE",
+        content = "LÖVE is a framework for making 2D games in Lua. It's free, open-source, and works on Windows, Mac OS X, Linux, Android and iOS."
     },
     {
         title = "Key Modules",
-        content = "L�VE provides several modules:\n- graphics: Drawing shapes, images, text\n- audio: Playing sound effects and music\n- physics: Simulating physical interactions\n- math: Vector math, random numbers\n- filesystem: Reading and writing files"
+        content = "LÖVE provides several modules:\n- graphics: Drawing shapes, images, text\n- audio: Playing sound effects and music\n- physics: Simulating physical interactions\n- math: Vector math, random numbers\n- filesystem: Reading and writing files"
     },
     {
         title = "Basic Game Loop",
-        content = "L�VE uses these main callbacks:\n- love.load(): Initialize your game\n- love.update(dt): Update game logic\n- love.draw(): Draw everything\n- love.keypressed(key): Handle keyboard input"
+        content = "LÖVE uses these main callbacks:\n- love.load(): Initialize your game\n- love.update(dt): Update game logic\n- love.draw(): Draw everything\n- love.keypressed(key): Handle keyboard input"
     }
 }
 

@@ -6,7 +6,8 @@ local ResolutionManager = require('lib.resolutionManager')
 
 local ResolutionManagement = {
     title = "Resolution Management",
-    description = "Demonstrates scaling, virtual resolution, and pixel-perfect rendering"
+    description = "Demonstrates scaling, virtual resolution, and pixel-perfect rendering",
+    category = "Systems"
 }
 
 -- UI elements

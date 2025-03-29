@@ -3,7 +3,8 @@
 
 local Particles = {
     title = "Particle Systems Demo",
-    description = "Various particle effects"
+    description = "Various particle effects",
+    category = "Graphics"
 }
 
 -- Multiple particle systems

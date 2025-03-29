@@ -3,7 +3,8 @@
 
 local Physics = {
     title = "Physics Demo",
-    description = "Demonstrates Box2D physics integration in LÖVE"
+    description = "Demonstrates Box2D physics integration in LÖVE",
+    category = "Systems"
 }
 
 -- Physics world and objects

@@ -6,7 +6,8 @@ local ShaderSystem = require('lib.shaderSystem')
 
 local Shaders = {
     title = "Shaders",
-    description = "Demonstrates post-processing, distortion effects, and lighting"
+    description = "Demonstrates post-processing, distortion effects, and lighting",
+    category = "Graphics"
 }
 
 -- UI elements

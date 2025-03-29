@@ -3,6 +3,7 @@
 
 -- Scene categories
 local categories = {
+    -- Make sure Basics is first in the list
     { name = "Basics", color = {0.4, 0.6, 0.8} },
     { name = "Graphics", color = {0.8, 0.4, 0.6} },
     { name = "Audio & Input", color = {0.4, 0.7, 0.4} },
@@ -15,6 +16,7 @@ local sceneCategories = {
     -- Basics
     basic_drawing = "Basics",
     documentation = "Basics",
+    lua_basics = "Basics",
 
     -- Graphics
     animations = "Graphics",
